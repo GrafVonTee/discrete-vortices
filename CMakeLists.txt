@@ -1,11 +1,10 @@
-cmake_minimum_required(VERSION 3.0.0)
-project(discrete-vorticies VERSION 0.1.0 LANGUAGES C CXX)
+cmake_minimum_required(VERSION 3.10)
+project(DiscreteVorticies C CXX)
 
-include(CTest)
-enable_testing()
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 
-add_executable(discrete-vorticies src/main.cpp)
-
-set(CPACK_PROJECT_NAME ${PROJECT_NAME})
-set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
-include(CPack)
+add_subdirectory(ZhukovskyGenerator)
+add_subdirectory(MdvProfiles)
+add_subdirectory(MainExec)
