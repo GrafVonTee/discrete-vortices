@@ -5,6 +5,7 @@ target_include_directories(
     "${PROJECT_BINARY_DIR}"
     "${PROJECT_SOURCE_DIR}/MdvProfiles/include"
     "${PROJECT_SOURCE_DIR}/ZhukovskyGenerator/include"
+    "${Eigen3_INCLUDE_DIRS}"
 )
 
 target_link_libraries(MainExec PUBLIC MdvProfiles ZhukovskyGenerator Eigen3::Eigen)

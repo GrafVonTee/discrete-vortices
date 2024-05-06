@@ -10,7 +10,7 @@ enum class ProfileFileManagerOption {
 
 ProfileFileManagerOption greetings() {
     std::cout << "Greeting, Traveler!" << std::endl;
-    std::cout << "Choose an option to proceed"
+    std::cout << "Choose an option to proceed (0 -- read, 1 -- write)";
 }
 
 Profile readProfile() {
