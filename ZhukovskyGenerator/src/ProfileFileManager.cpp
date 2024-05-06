@@ -14,23 +14,23 @@ void ProfileFileManager::writeToFile(const std::filesystem::path pathToFile, Pro
             << std::endl;
 
         Curve contour = profile.getContour();
-        for (value_type i = 0; i < contour.size(); ++i) {
+        for (int i = 0; i < contour.size(); ++i) {
             output << contour[i].x << " ";
         }
         output << std::endl;
 
-        for (value_type i = 0; i < contour.size(); ++i) {
+        for (int i = 0; i < contour.size(); ++i) {
             output << contour[i].y << " ";
         }
         output << std::endl;
 
         Curve middleLine = profile.getMiddleLine();
-        for (value_type i = 0; i < middleLine.size(); ++i) {
+        for (int i = 0; i < middleLine.size(); ++i) {
             output << middleLine[i].x << " ";
         }
         output << std::endl;
 
-        for (value_type i = 0; i < middleLine.size(); ++i) {
+        for (int i = 0; i < middleLine.size(); ++i) {
             output << middleLine[i].y << " ";
         }
         output << std::endl;

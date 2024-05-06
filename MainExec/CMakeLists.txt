@@ -7,4 +7,4 @@ target_include_directories(
     "${PROJECT_SOURCE_DIR}/ZhukovskyGenerator/include"
 )
 
-target_link_libraries(MainExec PUBLIC MdvProfiles ZhukovskyGenerator)
+target_link_libraries(MainExec PUBLIC MdvProfiles ZhukovskyGenerator Eigen3::Eigen)

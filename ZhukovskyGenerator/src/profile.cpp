@@ -40,12 +40,12 @@ void Profile::calculateCharacteristics() {
         Point beginPoint(curve[i]), endPoint(curve[curve.size() - i - 1]);
         middleCurve.push_back((beginPoint + endPoint) / 2);
             
-        if (fabsl(beginPoint.x - endPoint.x) < epsilon) {
-            value_type thicc = fabsl(beginPoint.y - endPoint.y);
-            relativeThickness = (relativeThickness > thicc) ? relativeThickness : thicc;
-        }
+        value_type thicc = sqrtl(powl(beginPoint.x - endPoint.x, 2) + powl(beginPoint.y - endPoint.y, 2));
+        relativeThickness = (relativeThickness > thicc) ? relativeThickness : thicc;
     }
     chord = Curve { middleCurve[0], middleCurve[middleCurve.size() - 1] };
+    value_type chordLength = sqrtl(powl(chord[0].x - chord[1].x, 2) + powl(chord[0].y - chord[1].y, 2));
+    relativeThickness /= chordLength;
     calculated = true;
 }
 

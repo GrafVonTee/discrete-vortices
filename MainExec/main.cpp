@@ -3,11 +3,36 @@
 #include "ProfileGenerator.h"
 #include "ProfileFileManager.h"
 
+enum class ProfileFileManagerOption {
+    ReadProfile,
+    WriteProfile
+};
+
+ProfileFileManagerOption greetings() {
+    std::cout << "Greeting, Traveler!" << std::endl;
+    std::cout << "Choose an option to proceed"
+}
+
+Profile readProfile() {
+
+}
+
+void writeProfile() {
+
+}
+
 int main() {
-    ProfileGenerator generator(-0.2, 0);
+    value_type x0, y0;
+    std::cout << "Enter x0 and y0: ";
+    std::cin >> x0 >> y0;
+
+    std::string fileOutput;
+    std::cout << "Enter file output name: ";
+    std::cin >> fileOutput;
+
+    ProfileGenerator generator(x0, y0);
     Profile profile = generator.generateProfile();
     ProfileFileManager fmanager;
-    fmanager.writeToFile(std::filesystem::current_path() / std::filesystem::path("zhukovsky-20.txt"), profile);
-    profile = fmanager.readFromFile(std::filesystem::current_path() / std::filesystem::path("zhukovsky-20.txt"));
+    fmanager.writeToFile(std::filesystem::current_path() / std::filesystem::path(fileOutput), profile);
     return 0;
 }
