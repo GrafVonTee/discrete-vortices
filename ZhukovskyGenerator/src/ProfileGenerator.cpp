@@ -1,11 +1,11 @@
 #define _USE_MATH_DEFINES
 
-#include "generator.h"
+#include "ProfileGenerator.h"
 #include <cmath>
 
-Profile ZhukovskyGenerator::generateProfile(segment_number_type numberOfSegments = 1000) {
-    Profile profile(numberOfSegments);
-    value_type thetaShift = M_PI / numberOfSegments;
+Profile ProfileGenerator::generateProfile(segment_number_type numberOfSegments) {
+    Profile profile(x0, y0, numberOfSegments);
+    value_type thetaShift = 2 * M_PI / numberOfSegments;
     value_type arm = sqrtl(powl(1 - x0, 2) + powl(y0, 2));
 
     for (int i = 0; i < numberOfSegments; ++i) {

@@ -1,7 +1,13 @@
 #include <iostream>
 #include "mdv.h"
+#include "ProfileGenerator.h"
+#include "ProfileFileManager.h"
 
 int main() {
-    voidFunc();
+    ProfileGenerator generator(-0.2, 0);
+    Profile profile = generator.generateProfile();
+    ProfileFileManager fmanager;
+    fmanager.writeToFile(std::filesystem::current_path() / std::filesystem::path("zhukovsky-20.txt"), profile);
+
     return 0;
 }

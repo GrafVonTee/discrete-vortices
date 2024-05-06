@@ -1,11 +1,11 @@
 set(SRC_CUR_DIR ${CMAKE_CURRENT_LIST_DIR}/src)
 
-add_executable(
+add_library(
     ZhukovskyGenerator
-    ${SRC_CUR_DIR}/generator.cpp
-    ${SRC_CUR_DIR}/main.cpp
-    ${SRC_CUR_DIR}/writer.cpp
-    ${SRC_CUR_DIR}/profile.cpp
+    ${SRC_CUR_DIR}/ProfileGenerator.cpp
+    ${SRC_CUR_DIR}/ProfileFileManager.cpp
+    ${SRC_CUR_DIR}/Point.cpp
+    ${SRC_CUR_DIR}/Profile.cpp
 )
 
 target_include_directories(

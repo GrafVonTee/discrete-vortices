@@ -1,22 +1,10 @@
 #include <cmath>
 #include <limits>
-#include "profile.h"
+#include "Profile.h"
 
-Point Point::operator+(Point const& other) {
-    Point result;
-    result.x = x + other.x;
-    result.y = y + other.y;
-    return result;
-}
-
-Point Point::operator/(value_type scalar) {
-    Point result;
-    result.x = x / scalar;
-    result.y = y / scalar;
-    return result;
-}
-
-Profile::Profile(segment_number_type numberOfSegments_) {
+Profile::Profile(value_type newX0, value_type newY0, segment_number_type numberOfSegments_) {
+    x0 = newX0;
+    y0 = newY0;
     numberOfSegments = numberOfSegments_;
     curve.reserve(numberOfSegments);
 }
@@ -48,41 +36,34 @@ void Profile::calculateCharacteristics() {
     relativeThickness = 0;
     value_type epsilon = 1e-3;
 
-    for (int i = 0; i < middleCurve.size(); ++i) {
+    for (int i = 0; i < curve.size() / 2; ++i) {
         Point beginPoint(curve[i]), endPoint(curve[curve.size() - i - 1]);
-        middleCurve[i] = (beginPoint + endPoint) / 2;
-        
-        if (chord[0].x > beginPoint.x) {
-            chord[0] = beginPoint;
-        } else if (chord[0].x > endPoint.x) {
-            chord[0] = endPoint;
-        }
-        
-        if (chord[1].x < beginPoint.x) {
-            chord[1] = beginPoint;
-        } else if (chord[1].x < endPoint.x) {
-            chord[1] = endPoint;
-        }
+        middleCurve.push_back((beginPoint + endPoint) / 2);
             
         if (fabsl(beginPoint.x - endPoint.x) < epsilon) {
             value_type thicc = fabsl(beginPoint.y - endPoint.y);
             relativeThickness = (relativeThickness > thicc) ? relativeThickness : thicc;
         }
     }
+    chord = Curve { middleCurve[0], middleCurve[middleCurve.size() - 1] };
     calculated = true;
 }
 
-Curve Profile::getMiddleLine() {
+const Curve& Profile::getContour() {
+    return curve;
+}
+
+const Curve& Profile::getMiddleLine() {
     calculateCharacteristics();
     return middleCurve;
 }
 
-Curve Profile::getChord() {
+const Curve& Profile::getChord() {
     calculateCharacteristics();
     return chord;
 }
 
-value_type Profile::getRelativeThickness() {
+const value_type Profile::getRelativeThickness() {
     calculateCharacteristics();
     return relativeThickness;
 }
