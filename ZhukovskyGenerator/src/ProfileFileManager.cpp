@@ -43,7 +43,7 @@ void ProfileFileManager::writeToFile(const std::filesystem::path pathToFile, Pro
         output.close();
     }
     else {
-        std::cerr << "Failed to write profile: file " << pathToFile << " not open" << std::endl;
+        std::cerr << "Failed to write profile: file " << pathToFile << std::endl;
     }
 }
 
@@ -70,11 +70,11 @@ Profile ProfileFileManager::readFromFile(const std::filesystem::path pathToFile)
                 }
             }
         }
-        std::cout << "Profile successfully read\n";
+        std::cout << "Profile successfully loaded\n";
         return ProfileGenerator(x0, y0).generateProfile(seg);
     }
     else {
-        std::cerr << "Failed to open profile: file " << pathToFile << " not open" << std::endl;
+        std::cerr << "Failed to open profile: file " << pathToFile << std::endl;
         return ProfileGenerator(0, 0).generateProfile();
     }
 }

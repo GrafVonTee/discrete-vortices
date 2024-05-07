@@ -4,9 +4,9 @@
 #include <cmath>
 
 Profile ProfileGenerator::generateProfile(segment_number_type numberOfSegments) {
-    Profile profile(x0, y0, numberOfSegments);
+    Profile profile(m_x0, m_y0, numberOfSegments);
 
-    Point vectorToX1 { 1 - x0, -y0};
+    Point vectorToX1 { 1 - m_x0, -m_y0};
 
     value_type dotProduct = vectorToX1.x;
     value_type determinant = sqrtl(powl(vectorToX1.x, 2) + powl(vectorToX1.y, 2));
@@ -16,11 +16,11 @@ Profile ProfileGenerator::generateProfile(segment_number_type numberOfSegments) 
     value_type bottomThetaShift = (M_PI - startAngle * 2) / numberOfSegments * 2;
     value_type currentTheta = -startAngle;
 
-    value_type arm = sqrtl(powl(1 - x0, 2) + powl(y0, 2));
+    value_type arm = sqrtl(powl(1 - m_x0, 2) + powl(m_y0, 2));
 
     for (int i = 0; i < numberOfSegments; ++i) {
-        value_type x1 = arm * cosl(currentTheta) + x0;
-        value_type y1 = arm * sinl(currentTheta) + y0;
+        value_type x1 = arm * cosl(currentTheta) + m_x0;
+        value_type y1 = arm * sinl(currentTheta) + m_y0;
 
         value_type xCurve = (x1 * (powl(x1, 2) + powl(y1, 2) + 1)) / (powl(x1, 2) + powl(y1, 2));
         value_type yCurve = (y1 * (powl(x1, 2) + powl(y1, 2) - 1)) / (powl(x1, 2) + powl(y1, 2));

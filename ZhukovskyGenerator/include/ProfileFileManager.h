@@ -5,7 +5,7 @@
 #include "Profile.h"
 
 class ProfileFileManager {
-    const char* format = "x0 = %f, y0 = %f, t = %f\n";
+    const char* m_format = "x0 = %f, y0 = %f, t = %f\n";
 
 public:
     void writeToFile(const std::filesystem::path pathToFile, Profile profile);
