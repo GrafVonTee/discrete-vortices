@@ -34,11 +34,12 @@ VectorXd solveNoFlowCondition(const std::vector<Platform>& platformCurve, const 
         double yCos = normal.dot(Vector2d(0, 1)) / normal.norm();
 
         Point control = platformCurve[k].getControlPoint();
-        Point vortex = platformCurve[k].getVortexPoint();
 
         bVector(k) = -env.fluidSpeed * xCos;
 
         for (int i = 0; i < N; ++i) {
+            Point vortex = platformCurve[i].getVortexPoint();
+
             double xV = (1.0 / 2.0 / M_PI)
                 * (control.y - vortex.y)
                 / (pow(control.x - vortex.x, 2) + pow(control.y - vortex.y, 2));
@@ -50,7 +51,7 @@ VectorXd solveNoFlowCondition(const std::vector<Platform>& platformCurve, const 
         }
     }
 
-    return wMatrix.colPivHouseholderQr().solve(bVector);
+    return wMatrix.completeOrthogonalDecomposition().solve(bVector);
 }
 
 GeneralVariables proceedMdv(std::vector<Platform>& platformCurve, const Environment& env) {
