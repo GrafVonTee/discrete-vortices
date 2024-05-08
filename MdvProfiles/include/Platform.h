@@ -19,6 +19,8 @@ public:
 
     Point getPointOnLine(const value_type x) const;
     Eigen::Vector2d getNormalVector() const { return m_normal; }
+
+    std::vector<Point> getLine() const;
     
     void setCirculation(const value_type circulation, const Environment& env);
     value_type getCirculation() const { return m_circulation; }
@@ -28,6 +30,7 @@ public:
     
     Point getVortexPoint(const value_type position = 1.0/4.0) const;
     Point getControlPoint(const value_type position = 3.0/4.0) const;
+    Point getMiddlePoint() const;
 
     void rotate(const value_type angle);
     void move(const Point& toStart);

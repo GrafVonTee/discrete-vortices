@@ -5,10 +5,11 @@ Platform::Platform(const Point& begin, const Point& end) {
     m_end = end;
     m_deriv = Point { m_end.x - m_begin.x, m_end.y - m_begin.y };
     m_normal << -m_deriv.y, m_deriv.x; // normal vector outside the profile
+    m_normal.normalize();
 }
 
 Point Platform::getPointOnLine(const value_type x) const {
-    return Point { x, (x - m_begin.x) * (m_end.y - m_begin.y) / (m_end.x - m_begin.x) };
+    return Point { x, (x - m_begin.x) * (m_end.y - m_begin.y) / (m_end.x - m_begin.x) + m_begin.y };
 }
 
 void Platform::setCirculation(const value_type circulation, const Environment& env) {
@@ -61,4 +62,13 @@ value_type Platform::getLength() const {
 void Platform::move(const Point& toStart) {
     m_begin = m_begin - toStart;
     m_end = m_end - toStart;
+}
+
+Point Platform::getMiddlePoint() const {
+    value_type positionOnX = m_deriv.x * 0.5 + m_begin.x;
+    return Point { positionOnX, getPointOnLine(positionOnX).y };
+}
+
+std::vector<Point> Platform::getLine() const {
+    return std::vector<Point> { m_begin, m_end };
 }

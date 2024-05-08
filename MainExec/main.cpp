@@ -3,6 +3,7 @@
 #include "Mdv.h"
 #include "ProfileGenerator.h"
 #include "ProfileFileManager.h"
+#include "Printing.h"
 
 enum class ProfileFileManagerOption {
     ReadProfile,
@@ -10,7 +11,7 @@ enum class ProfileFileManagerOption {
 };
 
 ProfileFileManagerOption greetings() {
-    std::cout << "Greeting, Traveler!" << std::endl;
+    std::cout << "Greetings, Traveler!" << std::endl;
     std::cout << "Choose an option to proceed (0 -- read, 1 -- write new): ";
     char option;
     do {
@@ -63,12 +64,16 @@ int main() {
             break;
     }
 
+    printProfile(profile);
+
     int numberOfSegments;
     std::cout << "Enter number of segments: ";
     std::cin >> numberOfSegments;
 
     std::vector<Platform> platformCurve = splitCurve(profile.getMiddleLine(), numberOfSegments);
     moveCurve(platformCurve, profile.getChord()[0]);
+
+    printPlatforms(platformCurve, "-default");
 
     double minAngle(-30.0 / 180.0 * M_PI), maxAngle(30.0 / 180.0 * M_PI);
     double angleShift(M_PI / 180.0);
