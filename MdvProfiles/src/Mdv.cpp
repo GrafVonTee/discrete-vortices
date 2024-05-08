@@ -23,6 +23,12 @@ std::vector<Platform> splitCurve(const Curve& curve, const int numberOfSegments)
     return platformCurve;
 }
 
+void moveCurve(std::vector<Platform>& curve, const Point& chordBegin) {
+    for (auto& platform: curve) {
+        platform.move(chordBegin);
+    }
+}
+
 VectorXd solveNoFlowCondition(const std::vector<Platform>& platformCurve, const Environment& env) {
     int N = platformCurve.size();
     MatrixXd wMatrix(N, N);
@@ -42,16 +48,16 @@ VectorXd solveNoFlowCondition(const std::vector<Platform>& platformCurve, const 
 
             double xV = (1.0 / 2.0 / M_PI)
                 * (control.y - vortex.y)
-                / (pow(control.x - vortex.x, 2) + pow(control.y - vortex.y, 2));
+                / pow(control.x - vortex.x, 2) + pow(control.y - vortex.y, 2);
             double yV = (1.0 / 2.0 / M_PI)
                 * (control.x - vortex.x)
-                / (pow(control.x - vortex.x, 2) + pow(control.y - vortex.y, 2));
+                / pow(control.x - vortex.x, 2) + pow(control.y - vortex.y, 2);
 
             wMatrix(k, i) = xV * xCos + yV * yCos;
         }
     }
 
-    return wMatrix.completeOrthogonalDecomposition().solve(bVector);
+    return wMatrix.colPivHouseholderQr().solve(bVector);
 }
 
 GeneralVariables proceedMdv(std::vector<Platform>& platformCurve, const Environment& env) {

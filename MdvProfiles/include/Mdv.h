@@ -10,6 +10,7 @@ Eigen::VectorXd solveNoFlowCondition(const std::vector<Platform>& platformCurve,
 GeneralVariables proceedMdv(std::vector<Platform>& platformCurve, const Environment& env);
 
 void rotateCurve(std::vector<Platform>& platformCurve, const double angle);
+void moveCurve(std::vector<Platform>& curve, const Point& chordBegin);
 
 StatisticManager getFullAirflow(
     std::vector<Platform>& platformCurve,

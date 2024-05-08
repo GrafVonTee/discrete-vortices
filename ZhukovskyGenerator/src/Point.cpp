@@ -13,3 +13,10 @@ Point Point::operator/(value_type scalar) {
     result.y = y / scalar;
     return result;
 }
+
+Point Point::operator-(Point const& other) {
+    Point result;
+    result.x = x - other.x;
+    result.y = y - other.y;
+    return result;
+}

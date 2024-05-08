@@ -36,7 +36,7 @@ void Profile::calculateCharacteristics() {
     m_relativeThickness = 0;
     value_type epsilon = 1e-3;
 
-    for (int i = 0; i < m_curve.size() / 2; ++i) {
+    for (int i = m_curve.size() / 2 - 1; i >= 0; --i) {
         Point beginPoint(m_curve[i]), endPoint(m_curve[m_curve.size() - i - 1]);
         m_middleCurve.push_back((beginPoint + endPoint) / 2);
             

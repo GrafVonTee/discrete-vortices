@@ -68,6 +68,7 @@ int main() {
     std::cin >> numberOfSegments;
 
     std::vector<Platform> platformCurve = splitCurve(profile.getMiddleLine(), numberOfSegments);
+    moveCurve(platformCurve, profile.getChord()[0]);
 
     double minAngle(-30.0 / 180.0 * M_PI), maxAngle(30.0 / 180.0 * M_PI);
     double angleShift(M_PI / 180.0);

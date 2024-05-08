@@ -30,4 +30,5 @@ public:
     Point getControlPoint(const value_type position = 3.0/4.0) const;
 
     void rotate(const value_type angle);
+    void move(const Point& toStart);
 };

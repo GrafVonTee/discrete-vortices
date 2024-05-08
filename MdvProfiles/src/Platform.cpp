@@ -57,3 +57,8 @@ void Platform::rotate(const value_type angle) {
 value_type Platform::getLength() const {
     return sqrtl(powl(m_deriv.x, 2) + powl(m_deriv.y, 2));
 }
+
+void Platform::move(const Point& toStart) {
+    m_begin = m_begin - toStart;
+    m_end = m_end - toStart;
+}
