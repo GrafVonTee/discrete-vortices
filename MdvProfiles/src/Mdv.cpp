@@ -39,7 +39,7 @@ VectorXd solveNoFlowCondition(const std::vector<Platform>& platformCurve, const 
         bVector(k) = -env.fluidSpeed * xCos;
 
         for (int i = 0; i < N; ++i) {
-            double xV = (-1.0 / 2.0 / M_PI)
+            double xV = (1.0 / 2.0 / M_PI)
                 * (control.y - vortex.y)
                 / (pow(control.x - vortex.x, 2) + pow(control.y - vortex.y, 2));
             double yV = (1.0 / 2.0 / M_PI)

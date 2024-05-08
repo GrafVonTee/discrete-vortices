@@ -10,7 +10,8 @@ void StatisticManager::checkAngles(const Statistic& stat) {
 
         if ((stat.genVars.lift < m_vector[m_vector.size() - 2].genVars.lift)
         && (m_criticalAngle == -5)
-        && (stat.angle >= m_zeroLiftAngle)) {
+        && (stat.angle >= m_zeroLiftAngle)
+        && (m_zeroLiftAngle != -5)) {
             m_criticalAngle = stat.angle;
         }
 
