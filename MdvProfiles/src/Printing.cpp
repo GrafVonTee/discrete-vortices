@@ -15,8 +15,8 @@ void printProfile(Profile& profile) {
     plt::figure_size(1280, 720);
     
     printCurve(profile.getContour());
-    // printCurve(profile.getChord());
-    // printCurve(profile.getMiddleLine());
+    printCurve(profile.getMiddleLine());
+    printCurve(profile.getChord());
 
     plt::ylim(-1, 1);
 

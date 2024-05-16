@@ -16,7 +16,7 @@ ProfileFileManagerOption greetings() {
     char option;
     do {
         std::cin >> option;
-    } while (std::cin.fail());
+    } while (std::cin.fail() || !((option = '0') || (option = '1')));
 
     return (option == '0')
         ? ProfileFileManagerOption::ReadProfile
