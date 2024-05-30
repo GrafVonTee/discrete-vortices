@@ -2,6 +2,7 @@
 
 #include "ProfileGenerator.h"
 #include <cmath>
+#include <complex>
 
 Profile ProfileGenerator::generateProfile(segment_number_type numberOfSegments) {
     Profile profile(m_x0, m_y0, numberOfSegments);
@@ -22,12 +23,15 @@ Profile ProfileGenerator::generateProfile(segment_number_type numberOfSegments) 
         value_type x1 = arm * cosl(currentTheta) + m_x0;
         value_type y1 = arm * sinl(currentTheta) + m_y0;
 
-        value_type xCurve = (x1 * (powl(x1, 2) + powl(y1, 2) + 1)) / (powl(x1, 2) + powl(y1, 2));
-        value_type yCurve = (y1 * (powl(x1, 2) + powl(y1, 2) - 1)) / (powl(x1, 2) + powl(y1, 2));
+        std::complex<value_type> zCircle(x1, y1);
+        std::complex<value_type> zCurve(std::complex<value_type>(1.0/2, 0) * (zCircle + std::complex<value_type>(1.0, 0) / zCircle));
 
-        profile.emplaceIntoCurve(Point { xCurve, yCurve });
+        // value_type xCurve = (x1 * (powl(x1, 2) + powl(y1, 2) + 1)) / (powl(x1, 2) + powl(y1, 2));
+        // value_type yCurve = (y1 * (powl(x1, 2) + powl(y1, 2) - 1)) / (powl(x1, 2) + powl(y1, 2));
+
+        profile.emplaceIntoCurve(Point { zCurve.real(), zCurve.imag() });
         
-        currentTheta += (i <= numberOfSegments / 2) ? upperThetaShift : bottomThetaShift;
+        currentTheta -= (i <= numberOfSegments / 2) ? bottomThetaShift : upperThetaShift;
     }
     return profile;
 }

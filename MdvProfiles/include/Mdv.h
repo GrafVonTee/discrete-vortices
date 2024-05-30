@@ -6,11 +6,11 @@
 #include "Statistic.h"
 
 std::vector<Platform> splitCurve(const Curve& curve, const int numberOfSegments);
-Eigen::VectorXd solveNoFlowCondition(const std::vector<Platform>& platformCurve, const Environment& env);
-GeneralVariables proceedMdv(std::vector<Platform>& platformCurve, const Environment& env);
-
 void rotateCurve(std::vector<Platform>& platformCurve, const double angle);
 void moveCurve(std::vector<Platform>& curve, const Point& chordBegin);
+
+Eigen::VectorXd solveNoFlowCondition(const std::vector<Platform>& platformCurve, const Environment& env, bool isMiddleLine);
+GeneralVariables proceedMdv(std::vector<Platform>& platformCurve, const Environment& env, bool isMiddleLine);
 
 StatisticManager getFullAirflow(
     std::vector<Platform>& platformCurve,
@@ -18,4 +18,5 @@ StatisticManager getFullAirflow(
     const double angleShift,
     const double minAngle,
     const double maxAngle,
-    const double chordLength);
+    Profile &profile,
+    bool isMiddleLine);

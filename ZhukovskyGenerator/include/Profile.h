@@ -15,6 +15,7 @@ class Profile {
     Curve m_chord;
     value_type m_relativeThickness;
     value_type m_chordLength;
+    value_type m_area;
     bool b_isCalculated = false;
 
     void calculateCharacteristics();
@@ -29,6 +30,7 @@ public:
     const Curve& getChord();
     const value_type getChordLength();
     const value_type getRelativeThickness();
+    const value_type getArea() const;
 
     const value_type getX0() { return m_x0; };
     const value_type getY0() { return m_y0; };

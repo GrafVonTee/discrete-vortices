@@ -4,7 +4,7 @@
 #include "ProfileFileManager.h"
 #include "ProfileGenerator.h"
 
-void ProfileFileManager::writeToFile(const std::filesystem::path pathToFile, Profile profile) {
+void ProfileFileManager::writeToFile(const std::filesystem::path pathToFile, Profile &profile) {
     std::ofstream output(pathToFile);
     if (output.is_open()) {
         output << "x0 = " << profile.getX0()

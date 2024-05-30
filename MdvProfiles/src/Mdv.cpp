@@ -1,5 +1,8 @@
 #include <cmath>
+#include <string>
+#include <sstream>
 #include "Mdv.h"
+#include "Printing.h"
 
 using Eigen::Vector2d;
 using Eigen::VectorXd;
@@ -29,10 +32,12 @@ void moveCurve(std::vector<Platform>& curve, const Point& chordBegin) {
     }
 }
 
-VectorXd solveNoFlowCondition(const std::vector<Platform>& platformCurve, const Environment& env) {
+VectorXd solveNoFlowCondition(const std::vector<Platform>& platformCurve, const Environment& env, bool isMiddleLine) {
     int N = platformCurve.size();
-    MatrixXd wMatrix(N, N);
-    VectorXd bVector(N);
+    int M = (isMiddleLine) ? N : N+1;
+
+    MatrixXd wMatrix(M, N);
+    VectorXd bVector(M);
 
     for (int k = 0; k < N; ++k) {
         Vector2d normal = platformCurve[k].getNormalVector();
@@ -56,12 +61,21 @@ VectorXd solveNoFlowCondition(const std::vector<Platform>& platformCurve, const 
             wMatrix(k, i) = xV * xCos + yV * yCos;
         }
     }
+    
+    if (!isMiddleLine) {
+        bVector(M-1) = 0;
+        for (int i = 0; i < N; ++i) {
+            wMatrix(M-1, i) = 0;
+        }
+        wMatrix(M-1, 0) = 1;
+        wMatrix(M-1, N-1) = 1;
+    }
 
     return wMatrix.colPivHouseholderQr().solve(bVector);
 }
 
-GeneralVariables proceedMdv(std::vector<Platform>& platformCurve, const Environment& env) {
-    VectorXd solution = solveNoFlowCondition(platformCurve, env);
+GeneralVariables proceedMdv(std::vector<Platform>& platformCurve, const Environment& env, bool isMiddleLine) {
+    VectorXd solution = solveNoFlowCondition(platformCurve, env, isMiddleLine);
     GeneralVariables genVars { 0, 0, 0 };
     for (int i = 0; i < platformCurve.size(); ++i) {
         platformCurve[i].setCirculation(solution(i), env);
@@ -79,31 +93,31 @@ void rotateCurve(std::vector<Platform>& platformCurve, const double angle) {
     }
 }
 
-StatisticManager getFullAirflow(
-    std::vector<Platform>& platformCurve,
-    const Environment& env,
-    const double angleShift,
-    const double minAngle,
-    const double maxAngle,
-    const double chordLength) {
+StatisticManager getFullAirflow(std::vector<Platform>& platformCurve,
+                                const Environment& env,
+                                const double angleShift,
+                                const double minAngle,
+                                const double maxAngle,
+                                Profile &profile,
+                                bool isMiddleLine) {
 
     StatisticManager manager;
     for (double curAngle = minAngle; curAngle <= maxAngle; curAngle += angleShift) {
         Statistic stat;
         stat.angle = curAngle;
         
-        rotateCurve(platformCurve, curAngle);
-        stat.genVars = proceedMdv(platformCurve, env);
+        rotateCurve(platformCurve, -curAngle);
+        stat.genVars = proceedMdv(platformCurve, env, isMiddleLine);
         stat.cY = stat.genVars.lift
             / env.fluidDensity
             / pow(env.fluidSpeed, 2) * 2;
         stat.mZ = stat.genVars.pitchMoment
             / env.fluidDensity
             / pow(env.fluidSpeed, 2) * 2
-            / chordLength;
+            / profile.getChordLength();
 
         manager.pushBack(stat);
-        rotateCurve(platformCurve, -curAngle);
+        rotateCurve(platformCurve, curAngle);
     }
 
     return manager;

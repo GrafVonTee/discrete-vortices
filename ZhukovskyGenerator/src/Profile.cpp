@@ -14,6 +14,9 @@ void Profile::emplaceIntoCurve(Point newPoint) {
         return;
     }
 
+    if (m_curve.size() > 0) {
+        m_area += (fabsl(newPoint.x - m_curve.back().x)) * newPoint.y;
+    }
     m_curve.push_back(newPoint);
 }
 
@@ -71,4 +74,8 @@ const value_type Profile::getRelativeThickness() {
 const value_type Profile::getChordLength() {
     calculateCharacteristics();
     return m_chordLength;
+}
+
+const value_type Profile::getArea() const {
+    return m_area;
 }
