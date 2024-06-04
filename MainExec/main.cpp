@@ -77,7 +77,7 @@ int main() {
     double minAngle(-30.0 / 180.0 * M_PI), maxAngle(30.0 / 180.0 * M_PI);
     double angleShift(M_PI / 180.0);
 
-    const Environment env = { 1000.0, 50.0 };
+    const Environment env = { 1000.0, 5.0 };
     StatisticManager manager;
 
     if (optionChosen == 0) {

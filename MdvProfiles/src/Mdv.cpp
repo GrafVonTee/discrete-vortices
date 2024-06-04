@@ -34,31 +34,28 @@ void moveCurve(std::vector<Platform>& curve, const Point& chordBegin) {
 
 VectorXd solveNoFlowCondition(const std::vector<Platform>& platformCurve, const Environment& env, bool isMiddleLine) {
     int N = platformCurve.size();
-    int M = (isMiddleLine) ? N : N+1;
+    int M = (isMiddleLine) ? N : (N+1);
 
     MatrixXd wMatrix(M, N);
     VectorXd bVector(M);
+    Vector2d qSpeed { cos(env.attackAngle) * env.fluidSpeed, sin(env.attackAngle) * env.fluidSpeed };
 
     for (int k = 0; k < N; ++k) {
         Vector2d normal = platformCurve[k].getNormalVector();
-        double xCos = normal.dot(Vector2d(1, 0)) / normal.norm();
-        double yCos = normal.dot(Vector2d(0, 1)) / normal.norm();
-
         Point control = platformCurve[k].getControlPoint();
 
-        bVector(k) = -env.fluidSpeed * xCos;
+        bVector(k) = -qSpeed.dot(normal);
 
         for (int i = 0; i < N; ++i) {
             Point vortex = platformCurve[i].getVortexPoint();
+            double radiusVector = pow(control.x - vortex.x, 2) + pow(control.y - vortex.y, 2);
+            double coeff = (1.0 / 2.0 / M_PI / radiusVector);
+            Eigen::Matrix<double, 2, 2> lumpedMatrix { {0, 1}, {-1, 0} };
+            Vector2d diffVec { (control.x - vortex.x), (control.y - vortex.y) };
 
-            double xV = (1.0 / 2.0 / M_PI)
-                * (control.y - vortex.y)
-                / pow(control.x - vortex.x, 2) + pow(control.y - vortex.y, 2);
-            double yV = (1.0 / 2.0 / M_PI)
-                * (control.x - vortex.x)
-                / pow(control.x - vortex.x, 2) + pow(control.y - vortex.y, 2);
+            Vector2d uwVector = coeff * lumpedMatrix * diffVec;
 
-            wMatrix(k, i) = xV * xCos + yV * yCos;
+            wMatrix(k, i) = uwVector.dot(normal);
         }
     }
     
@@ -70,6 +67,12 @@ VectorXd solveNoFlowCondition(const std::vector<Platform>& platformCurve, const 
         wMatrix(M-1, 0) = 1;
         wMatrix(M-1, N-1) = 1;
     }
+
+    // std::cout << wMatrix << std::endl << std::endl;
+    // std::cout << bVector << std::endl << std::endl;
+    // std::cout << wMatrix.colPivHouseholderQr().solve(bVector) << std::endl << std::endl;
+    // char i = 0;
+    // std::cin >> i;
 
     return wMatrix.colPivHouseholderQr().solve(bVector);
 }
@@ -105,19 +108,22 @@ StatisticManager getFullAirflow(std::vector<Platform>& platformCurve,
     for (double curAngle = minAngle; curAngle <= maxAngle; curAngle += angleShift) {
         Statistic stat;
         stat.angle = curAngle;
-        
-        rotateCurve(platformCurve, -curAngle);
-        stat.genVars = proceedMdv(platformCurve, env, isMiddleLine);
+
+        Environment newEnv = env;
+        newEnv.attackAngle = curAngle;
+
+        stat.genVars = proceedMdv(platformCurve, newEnv, isMiddleLine);
         stat.cY = stat.genVars.lift
             / env.fluidDensity
-            / pow(env.fluidSpeed, 2) * 2;
-        stat.mZ = stat.genVars.pitchMoment
-            / env.fluidDensity
-            / pow(env.fluidSpeed, 2) * 2
+            / pow(newEnv.fluidSpeed, 2) * 2
             / profile.getChordLength();
 
+        stat.mZ = stat.genVars.pitchMoment
+            / env.fluidDensity
+            / pow(newEnv.fluidSpeed, 2) * 2
+            / pow(profile.getChordLength(), 2);
+
         manager.pushBack(stat);
-        rotateCurve(platformCurve, curAngle);
     }
 
     return manager;

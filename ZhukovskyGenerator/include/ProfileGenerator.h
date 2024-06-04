@@ -3,13 +3,14 @@
 #include "Profile.h"
 
 class ProfileGenerator {
-    value_type m_x0, m_y0;
+    value_type m_x0, m_y0, m_radius;
     
 public:
-    ProfileGenerator(value_type x0, value_type y0) {
+    ProfileGenerator(value_type x0, value_type y0, value_type radius) {
         m_x0 = x0;
         m_y0 = y0;
+        m_radius = radius;
     }
 
-    Profile generateProfile(segment_number_type numberOfSegments = 1000);
+    Profile generateProfile(segment_number_type numberOfSegments = 10000);
 };

@@ -14,8 +14,9 @@ Point Platform::getPointOnLine(const value_type x) const {
 
 void Platform::setCirculation(const value_type circulation, const Environment& env) {
     m_circulation = circulation;
-    m_lift = -env.fluidDensity * env.fluidSpeed * circulation;
-    m_pitchMoment = m_lift * getVortexPoint().x;
+    m_lift = env.fluidDensity * env.fluidSpeed * circulation;
+    m_pressure = m_lift / getLength();
+    m_pitchMoment = -m_lift * getVortexPoint().x * cos(env.attackAngle);
 }
 
 Point Platform::getVortexPoint(const value_type position) const {

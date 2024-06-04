@@ -12,6 +12,7 @@ class Platform {
     value_type m_circulation;
     value_type m_lift;
     value_type m_pitchMoment;
+    value_type m_pressure;
 
 public:
     Platform() = default;
@@ -26,6 +27,7 @@ public:
     value_type getCirculation() const { return m_circulation; }
     value_type getLift() const { return m_lift; }
     value_type getPitchMoment() const { return m_pitchMoment; }
+    value_type getPressure() const { return m_pressure; }
     value_type getLength() const;
     
     Point getVortexPoint(const value_type position = 1.0/4.0) const;
