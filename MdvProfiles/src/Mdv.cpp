@@ -32,12 +32,11 @@ void moveCurve(std::vector<Platform>& curve, const Point& chordBegin) {
     }
 }
 
-VectorXd solveNoFlowCondition(const std::vector<Platform>& platformCurve, const Environment& env, bool isMiddleLine) {
+VectorXd solveNoFlowCondition(const std::vector<Platform>& platformCurve, const Environment& env) {
     int N = platformCurve.size();
-    int M = (isMiddleLine) ? N : (N+1);
 
-    MatrixXd wMatrix(M, N);
-    VectorXd bVector(M);
+    MatrixXd wMatrix(N, N);
+    VectorXd bVector(N);
     Vector2d qSpeed { cos(env.attackAngle) * env.fluidSpeed, sin(env.attackAngle) * env.fluidSpeed };
 
     for (int k = 0; k < N; ++k) {
@@ -58,30 +57,87 @@ VectorXd solveNoFlowCondition(const std::vector<Platform>& platformCurve, const 
             wMatrix(k, i) = uwVector.dot(normal);
         }
     }
-    
-    if (!isMiddleLine) {
-        bVector(M-1) = 0;
-        for (int i = 0; i < N; ++i) {
-            wMatrix(M-1, i) = 0;
-        }
-        wMatrix(M-1, 0) = 1;
-        wMatrix(M-1, N-1) = 1;
-    }
 
-    // std::cout << wMatrix << std::endl << std::endl;
-    // std::cout << bVector << std::endl << std::endl;
-    // std::cout << wMatrix.colPivHouseholderQr().solve(bVector) << std::endl << std::endl;
-    // char i = 0;
+    return wMatrix.colPivHouseholderQr().solve(bVector);
+}
+
+GeneralVariables proceedMdv(std::vector<Platform>& platformCurve, const Environment& env) {
+    VectorXd solution = solveNoFlowCondition(platformCurve, env);
+    GeneralVariables genVars { 0, 0, 0 };
+    for (int i = 0; i < platformCurve.size(); ++i) {
+        platformCurve[i].setCirculation(solution(i), env);
+
+        genVars.circulation += platformCurve[i].getCirculation();
+        genVars.lift += platformCurve[i].getLift();
+        genVars.pitchMoment += platformCurve[i].getPitchMoment();
+    }
+    return genVars;
+}
+
+Eigen::VectorXd solveNoFlowConditionVor2dc(const std::vector<Platform>& platformCurve, const Environment& env) {
+    int N = platformCurve.size();
+
+    MatrixXd wMatrix(N, N);
+    VectorXd bVector(N);
+    Vector2d qSpeed { cos(env.attackAngle) * env.fluidSpeed, sin(env.attackAngle) * env.fluidSpeed };
+
+    for (int k = 0; k < N-1; ++k) {
+        Vector2d normal = platformCurve[k].getNormalVector();
+        Vector2d tangential = platformCurve[k].getTangentialVector();
+        Point control = platformCurve[k].getMiddlePoint();
+
+        bVector(k) = -qSpeed.dot(tangential);
+
+        for (int i = 0; i < N; ++i) {
+            Point begin, end;
+            begin = platformCurve[i].getBeginPoint();
+            end = platformCurve[i].getEndPoint();
+
+            double up = (1.0 / 2.0 / M_PI) * (
+                atan((control.y - end.y) / (control.x - end.x))
+                - atan((control.y - begin.y) / (control.x - begin.x))
+            );
+            double wp = -1 * (1.0 / 4.0 / M_PI) * log(
+                (pow(control.x - begin.x, 2) + pow(control.y - begin.y, 2))
+                / (pow(control.x - end.x, 2) + pow(control.y - end.y, 2))
+            );
+
+            Vector2d uwp;
+            if (i == k) {
+                uwp << -0.5, 0;
+            } else {
+                uwp << up, wp;
+            }
+
+            Matrix2d toGlobal {
+                {normal(1), normal(0)},
+                {-normal(0), normal(1)}
+            };
+
+            Vector2d uwVector = toGlobal * uwp;
+
+            wMatrix(k, i) = uwVector.dot(tangential);
+        }
+    }
+    bVector(N-1) = 0;
+    for (int i = 0; i < N; ++i) {
+        wMatrix(N-1, i) = 0;
+    }
+    wMatrix(N-1, 0) = 1;
+    wMatrix(N-1, N-1) = 1;
+
+    // std::cout << wMatrix << std::endl << std::endl; 
+    // char i;
     // std::cin >> i;
 
     return wMatrix.colPivHouseholderQr().solve(bVector);
 }
 
-GeneralVariables proceedMdv(std::vector<Platform>& platformCurve, const Environment& env, bool isMiddleLine) {
-    VectorXd solution = solveNoFlowCondition(platformCurve, env, isMiddleLine);
+GeneralVariables proceedVor2dc(std::vector<Platform>& platformCurve, const Environment& env) {
+    VectorXd solution = solveNoFlowConditionVor2dc(platformCurve, env);
     GeneralVariables genVars { 0, 0, 0 };
     for (int i = 0; i < platformCurve.size(); ++i) {
-        platformCurve[i].setCirculation(solution(i), env);
+        platformCurve[i].setCirculation(solution(i) * platformCurve[i].getLength(), env);
 
         genVars.circulation += platformCurve[i].getCirculation();
         genVars.lift += platformCurve[i].getLift();
@@ -112,7 +168,7 @@ StatisticManager getFullAirflow(std::vector<Platform>& platformCurve,
         Environment newEnv = env;
         newEnv.attackAngle = curAngle;
 
-        stat.genVars = proceedMdv(platformCurve, newEnv, isMiddleLine);
+        stat.genVars = (isMiddleLine) ? proceedMdv(platformCurve, newEnv) : proceedVor2dc(platformCurve, newEnv);
         stat.cY = stat.genVars.lift
             / env.fluidDensity
             / pow(newEnv.fluidSpeed, 2) * 2

@@ -4,8 +4,10 @@ Platform::Platform(const Point& begin, const Point& end) {
     m_begin = begin;
     m_end = end;
     m_deriv = Point { m_end.x - m_begin.x, m_end.y - m_begin.y };
-    m_normal << -m_deriv.y, m_deriv.x; // normal vector outside the profile
+    m_normal << -m_deriv.y, m_deriv.x;
     m_normal.normalize();
+    m_tangential << m_deriv.x, m_deriv.y;
+    m_tangential.normalize();
 }
 
 Point Platform::getPointOnLine(const value_type x) const {

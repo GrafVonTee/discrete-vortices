@@ -7,7 +7,7 @@
 class Platform {
     Point m_begin, m_end;
     Point m_deriv;
-    Eigen::Vector2d m_normal;
+    Eigen::Vector2d m_normal, m_tangential;
 
     value_type m_circulation;
     value_type m_lift;
@@ -20,6 +20,7 @@ public:
 
     Point getPointOnLine(const value_type x) const;
     Eigen::Vector2d getNormalVector() const { return m_normal; }
+    Eigen::Vector2d getTangentialVector() const { return m_tangential; }
 
     std::vector<Point> getLine() const;
     
@@ -33,6 +34,8 @@ public:
     Point getVortexPoint(const value_type position = 1.0/4.0) const;
     Point getControlPoint(const value_type position = 3.0/4.0) const;
     Point getMiddlePoint() const;
+    Point getBeginPoint() const { return m_begin; }
+    Point getEndPoint() const { return m_end; }
 
     void rotate(const value_type angle);
     void move(const Point& toStart);
